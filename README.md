@@ -2,7 +2,7 @@
 
 A high-performance Flask web application that converts long-form PDF documents (like books and research papers) into natural-sounding audio using AWS Polly.
 
-![App Screenshot](static/css/screenshot_placeholder.png) *<!-- You can add a screenshot here later -->*
+![App Screenshot](static/css/screenshot_placeholder.png) *<!-- You can add a screenshot here later -->
 
 ## 🌟 Key Features
 
