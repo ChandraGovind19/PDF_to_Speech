@@ -64,10 +64,5 @@ The application is built on a modular Service-Oriented Architecture (SOA) to ens
 ## 🔒 Security Note
 This project processes files locally effectively acting as a pass-through to AWS. No file content is permanently stored on the server side after processing is complete (temp files are cleaned up).
 
-## 🔮 Future Roadmap
-*   User Accounts & Cloud Storage for Audio History.
-*   Mobile App Interface.
-*   Support for ePub and Mobi formats.
-
 ---
 *Built for the Modern Listener.*
