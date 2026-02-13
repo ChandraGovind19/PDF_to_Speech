@@ -1,3 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
 
+# MacOS
+.DS_Store
 
-test-1.wav
+# Application Artifacts
+*.mp3
+*.wav
+*.txt
+*.pdf
+uploads/
+static/audio/*
+!static/audio/.gitkeep
+
+# Polly Fetches
+polly_voices.json
+targeted_voices.json
+
+# Local Scripts (Optional - keep if you want to track them, ignore if they are clutter)
+# For now, I'll keep the scripts as they might be useful reference, 
+# but ignoring the output files above is key.
+AWSCLIV2.pkg
+key_pair.pem

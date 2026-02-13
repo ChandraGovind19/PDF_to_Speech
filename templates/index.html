@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Voice Converter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>PDF to Voice</h1>
+                <div class="theme-switch-wrapper">
+                    <label class="theme-switch" for="checkbox">
+                        <input type="checkbox" id="checkbox" />
+                        <div class="slider round">
+                            <span class="icon moon">🌙</span>
+                            <span class="icon sun">☀️</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <p>Convert your documents into natural-sounding audio.</p>
+        </header>
+
+        <main>
+            <section class="instructions-section">
+                <h2>How to Use</h2>
+                <div class="steps-card">
+                    <div class="step">
+                        <span class="step-num">1</span>
+                        <p>Upload a PDF document.</p>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">2</span>
+                        <p>Click "Convert to Audio".</p>
+                    </div>
+                    <div class="step">
+                        <span class="step-num">3</span>
+                        <p>Download your MP3.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="upload-section">
+                <form action="/convert" method="post" enctype="multipart/form-data" id="upload-form">
+                    <div class="file-drop-area" id="drop-area">
+                        <span class="fake-btn">Choose files</span>
+                        <span class="file-msg">or drag and drop PDF here</span>
+                        <input class="file-input" type="file" name="file" accept=".pdf" required>
+                    </div>
+
+                    <!-- Voice Settings -->
+                    <div class="settings-section">
+                        <div class="setting-group">
+                            <label for="language">Language</label>
+                            <select id="language" name="language">
+                                <option value="en-US">English (US)</option>
+                                <option value="en-IN">English (Indian) / Hindi</option>
+                                <option value="en-GB">English (British)</option>
+                                <option value="en-AU">English (Australian)</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label for="voice">Voice</label>
+                            <select id="voice" name="voice">
+                                <!-- Populated by JS -->
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label>Quality</label>
+                            <div class="quality-options">
+                                <label class="radio-label">
+                                    <input type="radio" name="engine" value="standard">
+                                    Standard
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="engine" value="neural" checked>
+                                    Neural
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="convert-btn" id="convert-btn">Convert to Audio</button>
+                    <!-- Loading Spinner (Restored) -->
+                    <div class="loader-container" id="loader" style="display: none;">
+                        <div class="loader"></div>
+                        <p class="loading-text" id="loading-text">Starting...</p>
+                    </div>
+                </form>
+
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class="flashes">
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
+            </section>
+
+            {% if audio_file %}
+            <section class="result-section">
+                <h2>Conversion Complete!</h2>
+                <p>File: {{ filename }}</p>
+                <audio controls>
+                    <source src="{{ url_for('static', filename='audio/' + audio_file) }}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+                <br>
+                <a href="{{ url_for('static', filename='audio/' + audio_file) }}" download class="download-btn">Download
+                    MP3</a>
+            </section>
+            {% endif %}
+        </main>
+    </div>
+
+    <script>
+        const fileInput = document.querySelector('.file-input');
+        const dropArea = document.querySelector('.file-drop-area');
+        const fileMsg = document.querySelector('.file-msg');
+        const form = document.getElementById('upload-form');
+        const loader = document.getElementById('loader');
+        const convertBtn = document.querySelector('.convert-btn');
+
+        fileInput.addEventListener('dragenter', () => {
+            dropArea.classList.add('is-active');
+        });
+
+        fileInput.addEventListener('dragleave', () => {
+            dropArea.classList.remove('is-active');
+        });
+
+        fileInput.addEventListener('drop', () => {
+            dropArea.classList.remove('is-active');
+        });
+
+        fileInput.addEventListener('change', () => {
+            const filesCount = fileInput.files.length;
+            const textContainer = document.querySelector('.file-msg');
+
+            if (filesCount === 1) {
+                // if single file is selected, show file name
+                const fileName = fileInput.files[0].name;
+                fileMsg.textContent = fileName;
+            } else {
+                // otherwise show default text
+                fileMsg.textContent = "or drag and drop files here";
+            }
+        });
+
+        form.addEventListener('submit', () => {
+            loader.style.display = 'flex'; // Show inline loader
+            convertBtn.disabled = true;
+            convertBtn.textContent = 'Processing...';
+
+            const loadingText = document.getElementById('loading-text');
+            const messages = ["Extracting text...", "Chunking content...", "Synthesizing speech...", "Finalizing audio..."];
+            let i = 0;
+
+            // First message immediately
+            loadingText.textContent = messages[0];
+            i++;
+
+            setInterval(() => {
+                loadingText.textContent = messages[i % messages.length];
+                i++;
+            }, 3000);
+        });
+        // Voice Data (Curated)
+        const voiceData = {
+            'en-US': [
+                { id: 'Joanna', name: 'Joanna (Female)', engines: ['neural', 'standard'] },
+                { id: 'Matthew', name: 'Matthew (Male)', engines: ['neural', 'standard'] },
+                { id: 'Danielle', name: 'Danielle (Female)', engines: ['neural', 'long-form'] },
+                { id: 'Gregory', name: 'Gregory (Male)', engines: ['neural', 'long-form'] },
+                { id: 'Ivy', name: 'Ivy (Child)', engines: ['neural', 'standard'] },
+                { id: 'Ruth', name: 'Ruth (Female)', engines: ['neural', 'long-form'] },
+                { id: 'Stephen', name: 'Stephen (Male)', engines: ['neural'] }
+            ],
+            'en-IN': [
+                { id: 'Kajal', name: 'Kajal (Female - Bilingual)', engines: ['neural'] },
+                { id: 'Aditi', name: 'Aditi (Female - Bilingual)', engines: ['standard'] },
+                { id: 'Raveena', name: 'Raveena (Female)', engines: ['standard'] }
+            ],
+            'en-GB': [
+                { id: 'Amy', name: 'Amy (Female)', engines: ['neural', 'standard'] },
+                { id: 'Emma', name: 'Emma (Female)', engines: ['neural', 'standard'] },
+                { id: 'Brian', name: 'Brian (Male)', engines: ['neural', 'standard'] },
+                { id: 'Arthur', name: 'Arthur (Male)', engines: ['neural'] }
+            ],
+            'en-AU': [
+                { id: 'Olivia', name: 'Olivia (Female)', engines: ['neural', 'standard'] },
+                { id: 'Russell', name: 'Russell (Male)', engines: ['standard'] }
+            ]
+        };
+
+        const languageSelect = document.getElementById('language');
+        const voiceSelect = document.getElementById('voice');
+        const neuralRadio = document.querySelector('input[value="neural"]');
+        const standardRadio = document.querySelector('input[value="standard"]');
+
+        function updateVoices() {
+            const selectedLang = languageSelect.value;
+            const voices = voiceData[selectedLang] || [];
+
+            voiceSelect.innerHTML = '';
+            voices.forEach(voice => {
+                const option = document.createElement('option');
+                option.value = voice.id;
+                option.textContent = voice.name;
+                option.dataset.engines = JSON.stringify(voice.engines);
+                voiceSelect.appendChild(option);
+            });
+
+            updateEngineOptions();
+        }
+
+        function updateEngineOptions() {
+            const selectedVoiceOption = voiceSelect.options[voiceSelect.selectedIndex];
+            if (!selectedVoiceOption) return;
+
+            const engines = JSON.parse(selectedVoiceOption.dataset.engines);
+
+            // Enable/Disable Neural
+            if (engines.includes('neural')) {
+                neuralRadio.disabled = false;
+                if (!standardRadio.checked && !neuralRadio.checked) neuralRadio.checked = true;
+            } else {
+                neuralRadio.disabled = true;
+                standardRadio.checked = true;
+            }
+
+            // Enable/Disable Standard
+            if (engines.includes('standard')) {
+                standardRadio.disabled = false;
+            } else {
+                standardRadio.disabled = true;
+                neuralRadio.checked = true;
+            }
+        }
+
+        languageSelect.addEventListener('change', updateVoices);
+        voiceSelect.addEventListener('change', updateEngineOptions);
+
+        // Initialize
+        updateVoices();
+
+        // Theme Toggle Logic
+        const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            if (currentTheme === 'light') {
+                toggleSwitch.checked = true;
+            }
+        }
+
+        function switchTheme(e) {
+            if (e.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        toggleSwitch.addEventListener('change', switchTheme);
+    </script>
+</body>
+
+</html>
