@@ -2,4 +2,6 @@ flask
 boto3
 pydub
 Werkzeug
+pymupdf
+gunicorn
 gunicorn
