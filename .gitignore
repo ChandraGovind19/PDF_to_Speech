@@ -12,6 +12,7 @@ venv/
 *.mp3
 *.wav
 *.txt
+!requirements.txt
 *.pdf
 uploads/
 static/audio/*
@@ -26,3 +27,4 @@ targeted_voices.json
 # but ignoring the output files above is key.
 AWSCLIV2.pkg
 key_pair.pem
+.env
