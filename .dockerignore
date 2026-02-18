@@ -1,0 +1,11 @@
+.git
+.gitignore
+.env
+__pycache__
+venv
+uploads/
+static/audio/*
+!static/audio/.gitkeep
+*.mp3
+*.wav
+*.pdf
