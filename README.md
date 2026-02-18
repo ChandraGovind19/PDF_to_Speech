@@ -55,11 +55,26 @@ The application is built on a modular Service-Oriented Architecture (SOA) to ens
     export AWS_DEFAULT_REGION=us-east-1
     ```
 
-4.  **Run the Application**
-    ```bash
-    python3 app.py
-    ```
-    Visit `http://127.0.0.1:5000` in your browser.
+### Step 2: Deploy on Render (Recommended: Docker)
+Since this app requires system-level dependencies like `ffmpeg` for audio processing, we use Docker.
+1.  Sign up at [render.com](https://render.com).
+2.  Click **"New +"** -> **"Web Service"**.
+3.  Connect your GitHub account and select your `pdf-to-voice-app` repo.
+4.  **Settings**:
+    *   **Runtime**: **Docker** (Render should auto-detect the `Dockerfile`).
+    *   **Region**: Ohio (us-east-2) or similar.
+5.  **Environment Variables**:
+    *   Add your AWS credentials here! DO NOT commit them to GitHub.
+    *   `AWS_ACCESS_KEY_ID`: ...
+    *   `AWS_SECRET_ACCESS_KEY`: ...
+    *   `AWS_DEFAULT_REGION`: `us-east-1`
+6.  Click **"Create Web Service"**.
+
+### Run the Application
+```bash
+python3 app.py
+```
+Visit `http://127.0.0.1:5000` in your browser.
 
 ## 🔒 Security Note
 This project processes files locally effectively acting as a pass-through to AWS. No file content is permanently stored on the server side after processing is complete (temp files are cleaned up).
