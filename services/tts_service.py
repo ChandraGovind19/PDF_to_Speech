@@ -1,9 +1,7 @@
 
 import boto3
 from botocore.config import Config
-import io
 import concurrent.futures
-from pydub import AudioSegment
 
 MAX_CHARS = 3000  # AWS Polly max text length per request
 MONTHLY_CHAR_LIMIT = 4_500_000  # Safety limit
@@ -43,7 +41,7 @@ def convert_chunk_to_speech(chunk, voice_id="Joanna", engine="neural"):
             VoiceId=voice_id,
             Engine=engine
         )
-        return io.BytesIO(response["AudioStream"].read())
+        return response["AudioStream"].read()
     except Exception as e:
         print(f"Error converting chunk: {e}")
         return None  # Or raise, depending on desired behavior
@@ -75,9 +73,9 @@ def text_to_speech_service(text, output_path, voice_id="Joanna", engine="neural"
         for future in concurrent.futures.as_completed(future_to_index):
             index = future_to_index[future]
             try:
-                audio_stream = future.result()
-                if audio_stream:
-                    audio_segments[index] = AudioSegment.from_file(audio_stream, format="mp3")
+                audio_bytes = future.result()
+                if audio_bytes:
+                    audio_segments[index] = audio_bytes
                 else:
                     raise RuntimeError(f"Failed to convert chunk {index}")
             except Exception as e:
@@ -85,13 +83,12 @@ def text_to_speech_service(text, output_path, voice_id="Joanna", engine="neural"
                 # You might want to handle partial failures or retry logic here
                 raise e
 
-    # Combine all segments
-    final_audio = AudioSegment.silent(duration=0)
-    for segment in audio_segments:
-        if segment:
-            final_audio += segment
-        else:
-             print("Warning: Missing audio segment during assembly.")
+    # Combine all segments directly (binary concatenation)
+    with open(output_path, 'wb') as f:
+        for segment in audio_segments:
+            if segment:
+                f.write(segment)
+            else:
+                 print("Warning: Missing audio segment during assembly.")
 
-    final_audio.export(output_path, format="mp3")
     return output_path
