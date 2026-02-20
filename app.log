@@ -1,20 +1,29 @@
  * Serving Flask app 'app'
  * Debug mode: on
 WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
- * Running on http://127.0.0.1:5000
+ * Running on http://127.0.0.1:5001
 Press CTRL+C to quit
  * Restarting with stat
  * Debugger is active!
  * Debugger PIN: 144-181-743
-Traceback (most recent call last):
-  File "/Users/chandragovind/Desktop/Projects/PDF to Voice/app.py", line 87, in <module>
-    app.run(debug=True)
-  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/flask/app.py", line 625, in run
-    run_simple(t.cast(str, host), port, self, **options)
-  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/werkzeug/serving.py", line 1106, in run_simple
-    run_with_reloader(
-  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/werkzeug/_reloader.py", line 448, in run_with_reloader
-    ensure_echo_on()
-  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/werkzeug/_reloader.py", line 428, in ensure_echo_on
-    termios.tcsetattr(sys.stdin, termios.TCSANOW, attributes)
-termios.error: (4, 'Interrupted system call')
+127.0.0.1 - - [19/Feb/2026 16:29:59] "POST /convert HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:29:59] "GET /status/1290c4e6-5890-4efe-8ddf-0d76da235d9e HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:30:02] "GET /status/1290c4e6-5890-4efe-8ddf-0d76da235d9e HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:30:26] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:30:26] "GET /static/css/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:30:26] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [19/Feb/2026 16:31:21] "POST /convert HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:31:21] "GET /status/e752b4f2-ac9c-4205-bfb0-cb0b0ea8f461 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:31:32] "POST /convert HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:31:32] "GET /status/2ad6cfc5-cacc-49a6-840c-10511360a358 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:31:35] "GET /status/2ad6cfc5-cacc-49a6-840c-10511360a358 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:32:05] "POST /convert HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:32:05] "GET /status/52b838be-451d-4927-a999-78073965893d HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:32:08] "GET /status/52b838be-451d-4927-a999-78073965893d HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:32:46] "POST /convert HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:32:46] "GET /status/2cf79bc1-fecf-4671-a040-c2bc2ff54fab HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:32:49] "GET /status/2cf79bc1-fecf-4671-a040-c2bc2ff54fab HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:33:11] "POST /convert HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:33:11] "GET /status/8639d471-71ce-4010-8d06-83f7e8271749 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:33:22] "POST /convert HTTP/1.1" 200 -
+127.0.0.1 - - [19/Feb/2026 16:33:22] "GET /status/6de430b3-5027-4366-9d5b-7c8c68f4e46a HTTP/1.1" 200 -

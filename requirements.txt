@@ -4,5 +4,3 @@ pydub
 Werkzeug
 pymupdf
 gunicorn
-redis
-rq
