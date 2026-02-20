@@ -1,11 +1,20 @@
 
 import boto3
+from botocore.config import Config
 import io
 import concurrent.futures
 from pydub import AudioSegment
 
 MAX_CHARS = 3000  # AWS Polly max text length per request
 MONTHLY_CHAR_LIMIT = 4_500_000  # Safety limit
+
+# Configure AWS client for robust retries (adaptive mode handles rate limits)
+polly_config = Config(
+    retries = {
+        'max_attempts': 10,
+        'mode': 'adaptive'
+    }
+)
 
 def chunk_text(text, chunk_size=MAX_CHARS):
     """Split text into chunks without breaking words."""
@@ -27,7 +36,7 @@ def convert_chunk_to_speech(chunk, voice_id="Joanna", engine="neural"):
     Converts a single text chunk to speech using AWS Polly.
     """
     try:
-        polly = boto3.client("polly", region_name="us-east-1")
+        polly = boto3.client("polly", region_name="us-east-1", config=polly_config)
         response = polly.synthesize_speech(
             Text=chunk,
             OutputFormat="mp3",
@@ -56,8 +65,8 @@ def text_to_speech_service(text, output_path, voice_id="Joanna", engine="neural"
     # Placeholder for ordered audio segments
     audio_segments = [None] * len(chunks)
 
-    # Use ThreadPoolExecutor for parallel processing
-    with concurrent.futures.ThreadPoolExecutor() as executor:
+    # Use ThreadPoolExecutor for parallel processing (limit to 5 to avoid AWS rate limits)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         future_to_index = {
             executor.submit(convert_chunk_to_speech, chunk, voice_id, engine): i 
             for i, chunk in enumerate(chunks)
